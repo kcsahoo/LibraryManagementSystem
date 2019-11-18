@@ -142,6 +142,8 @@ namespace LibraryManagementSystem.Controllers
             if (user.LendingLimit > booksLoanedNotReturned.Count() && book.UnitsInStock >0 && book.TotalUnits != 0)
             {
                 reservation.ReturnedOn = null;
+                reservation.Book = null;
+                reservation.RegisteredUser = null;
                 var reservationAdded = _unitOfWork.Reservations.LoanBook(reservation);
                 if (reservationAdded != null)
                 {                    
@@ -178,6 +180,9 @@ namespace LibraryManagementSystem.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]Reservation reservation)
         {
+            var existingReservation = _unitOfWork.Reservations.GetReservationByID(reservation.Id);
+            reservation.BookId = existingReservation.BookId;
+            reservation.RegisteredUserId = existingReservation.RegisteredUserId;
             var reservationAdded = _unitOfWork.Reservations.ReturnBook(reservation);
             if (reservationAdded != null)
             {
